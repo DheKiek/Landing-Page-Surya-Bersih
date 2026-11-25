@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan Layanan — Surya Bersih</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+        body{background:#fff9eb;min-height:100vh;padding-bottom:40px;}
+        header{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;padding:1.2rem;text-align:center;position:sticky;top:0;z-index:50;}
+        header a{color:white;text-decoration:none;font-size:0.9rem;display:inline-block;margin-top:0.3rem;}
+        .container{max-width:600px;margin:0 auto;padding:1.5rem;}
+        .step-indicator{display:flex;justify-content:center;gap:0.5rem;margin-bottom:1.5rem;}
+        .step{width:32px;height:32px;border-radius:50%;background:#fcd34d;color:#92400e;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+        .step.inactive{background:#fde68a;color:#b45309;opacity:0.6;}
+        .card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 3px 8px rgba(0,0,0,0.08);margin-bottom:1rem;}
+        h2{color:#92400e;font-size:1.3rem;margin-bottom:1rem;}
+        h3{font-size:1rem;color:#78350f;margin-bottom:0.8rem;}
+        .category-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+        .category-btn{border:2px solid #fcd34d;background:white;border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+        .category-btn:hover,.category-btn.active{border-color:#f59e0b;background:#fffbeb;}
+        .category-btn span{font-size:1.5rem;display:block;margin-bottom:0.5rem;}
+        label{display:block;margin-top:0.8rem;margin-bottom:0.3rem;font-weight:500;color:#444;font-size:0.95rem;}
+        input,select,textarea{width:100%;padding:0.75rem;border:1px solid #fcd34d;border-radius:8px;font-size:1rem;background:#fffef5;}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:#f59e0b;}
+        .btn{width:100%;padding:0.9rem;border:none;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;transition:background 0.3s;}
+        .btn-primary{background:#f59e0b;color:white;margin-top:1rem;}
+        .btn-primary:hover{background:#d97706;}
+        .btn-secondary{background:#fde68a;color:#78350f;margin-top:0.5rem;}
+        .btn-secondary:hover{background:#fcd34d;}
+        .price-box{background:#fff3d9;border-radius:8px;padding:1rem;margin-top:1rem;}
+        .price-row{display:flex;justify-content-between;padding:0.3rem 0;font-size:0.95rem;}
+        .price-row.total{font-weight:bold;font-size:1.1rem;border-top:1px dashed #f59e0b;margin-top:0.5rem;padding-top:0.7rem;}
+        .hidden{display:none !important;}
+        .success-box{text-align:center;padding:2rem 1rem;}
+        .success-icon{font-size:4rem;color:#22c55e;}
+        .note{font-size:0.85rem;color:#666;margin-top:0.3rem;}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>☀️ SURYA BERSIH</h1>
+    <p>Pemesanan Layanan Kebersihan</p>
+    <a href="index.html">← Kembali ke Beranda</a>
+</header>
+
+<div class="container">
+    <!-- Langkah 1: Pilih Kategori -->
+    <div id="step1">
+        <div class="step-indicator">
+            <div class="step">1</div>
+            <div class="step inactive">2</div>
+            <div class="step inactive">3</div>
+        </div>
+        
+        <div class="card">
+            <h2>Pilih Jenis Layanan</h2>
+            <div class="category-grid">
+                <button class="category-btn" onclick="pilihKategori('cuci-barang')">
+                    <span>🧺</span>Cuci Barang
+                </button>
+                <button class="category-btn" onclick="pilihKategori('bersih-ruangan')">
+                    <span>🏠</span>Bersihkan Ruangan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Langkah 2: Pilih Layanan & Detail -->
+    <div id="step2" class="hidden">
+        <div class="step-indicator">
+            <div class="step">✓</div>
+            <div class="step">2</div>
+            <div class="step inactive">3</div>
+        </div>
+        
+        <div class="card">
+            <h2 id="judul-kategori">Layanan</h2>
+            
+            <label for="jenis-layanan">Pilih Layanan</label>
+            <select id="jenis-layanan" onchange="updateHarga()">
+                <option value="">-- Pilih layanan --</option>
+            </select>
+
+            <div id="field-ukuran" class="hidden">
+                <label>Ukuran Karpet (meter)</label>
+                <div style="display:flex;gap:0.8rem;">
+                    <div style="flex:1;">
+                        <label style="margin-top:0;">Panjang</label>
+                        <input type="number" id="panjang" placeholder="0" oninput="hitungLuas()">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="margin-top:0;">Lebar</label>
+                        <input type="number" id="lebar" placeholder="0" oninput="hitungLuas()">
+                    </div>
+                </div>
+                <p class="note">Luas: <span id="hasil-luas">0</span> m²</p>
+            </div>
+
+            <div id="field-jumlah" class="hidden">
+                <label for="jumlah">Jumlah / Durasi</label>
+                <input type="number" id="jumlah" value="1" min="1" oninput="updateHarga()">
+            </div>
+
+            <label>📅 Tanggal Layanan</label>
+            <input type="date" id="tanggal">
+
+            <label>⏰ Jam Kedatangan</label>
+            <select id="jam">
+                <option value="08:00">08:00 — 10:00</option>
+                <option value="10:00">10:00 — 12:00</option>
+                <option value="13:00">13:00 — 15:00</option>
+                <option value="15:00">15:00 — 17:00</option>
+            </select>
+
+            <label>🚚 Antar-Jemput Barang?</label>
+            <select id="antarjemput" onchange="updateHarga()">
+                <option value="0">Tidak (Saya antar ke lokasi)</option>
+                <option value="25000">Ya (+Rp 25.000)</option>
+            </select>
+
+            <div class="price-box">
+                <div class="price-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">Rp 0</span>
+                </div>
+                <div class="price-row">
+                    <span>Antar-Jemput</span>
+                    <span id="biaya-antar">Rp 0</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span id="total">Rp 0</span>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="kembaliKeLangkah1()">◀ Kembali</button>
+            <button class="btn btn-primary" onclick="lanjutKeLangkah3()">Lanjut Isi Data ▶</button>
+        </div>
+    </div>
+
+    <!-- Langkah 3: Data Pelanggan -->
+    <div id="step3" class="hidden">
+        <div class="step-indicator">
+            <div class="step">✓</div>
+            <div class="step">✓</div>
+            <div class="step">3</div>
+        </div>
+        
+        <div class="card">
+            <h2>Data Pemesan</h2>
+            
+            <label for="nama">Nama Lengkap</label>
+            <input type="text" id="nama" placeholder="Nama Anda">
+
+            <label for="nohp">Nomor HP / WhatsApp</label>
+            <input type="tel" id="nohp" placeholder="Contoh: 0812-xxxx-xxxx">
+
+            <label for="alamat">Alamat Lengkap</label>
+            <textarea id="alamat" rows="3" placeholder="Alamat tempat diambil/dikerjakan"></textarea>
+
+            <label for="catatan">Catatan Khusus (Opsional)</label>
+            <textarea id="catatan" rows="2" placeholder="Contoh: ada noda sulit..."></textarea>
+
+            <button class="btn btn-secondary" onclick="kembaliKeLangkah2()">◀ Kembali</button>
+            <button class="btn btn-primary" onclick="kirimPesanan()">✅ Konfirmasi Pesanan</button>
+        </div>
+    </div>
+
+    <!-- Langkah 4: Berhasil -->
+    <div id="step4" class="hidden">
+        <div class="card success-box">
+            <div class="success-icon">✅</div>
+            <h2>Pesanan Berhasil Dikirim!</h2>
+            <p style="margin:1rem 0;">Terima kasih! Pesanan Anda sudah tercatat.<br>Kami akan menghubungi Anda secepatnya.</p>
+            <p style="background:#f3f4f6;padding:0.8rem;border-radius:8px;font-size:0.9rem;" id="ringkasan-pesanan"></p>
+            <button class="btn btn-primary" onclick="location.reload()">🔄 Pesanan Baru</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Data Harga
+const layanan = {
+    'cuci-barang': [
+        {id:'karpet',nama:'Cuci Karpet Standar',harga:15000,satuan:'m²',tipe:'luas'},
+        {id:'karpet-tebal',nama:'Cuci Karpet Bulu/Tebal',harga:20000,satuan:'m²',tipe:'luas'},
+        {id:'sofa',nama:'Cuci Sofa (per tempat duduk)',harga:45000,satuan:'buah',tipe:'jumlah'},
+        {id:'sofa-set',nama:'Cuci Sofa Set (3+2)',harga:180000,satuan:'set',tipe:'tetap'},
+        {id:'kasur-120',nama:'Cuci Kasur Springbed 120',harga:65000,satuan:'buah',tipe:'tetap'},
+        {id:'kasur-160',nama:'Cuci Kasur Springbed 160',harga:80000,satuan:'buah',tipe:'tetap'},
+        {id:'gorden',nama:'Cuci Gorden',harga:8000,satuan:'m',tipe:'jumlah'},
+        {id:'sepatu',nama:'Cuci Sepatu (per pasang)',harga:25000,satuan:'pasang',tipe:'jumlah'}
+    ],
+    'bersih-ruangan': [
+        {id:'rumah-kecil',nama:'Bersih Rumah Kecil',harga:200000,satuan:'paket',tipe:'tetap'},
+        {id:'rumah-sedang',nama:'Bersih Rumah Sedang',harga:250000,satuan:'paket',tipe:'tetap'},
+        {id:'rumah-besar',nama:'Bersih Rumah Besar',harga:350000,satuan:'paket',tipe:'tetap'},
+        {id:'kamar-mandi',nama:'Bersih Kamar Mandi',harga:60000,satuan:'unit',tipe:'jumlah'},
+        {id:'kamar-tidur',nama:'Bersih Kamar Tidur',harga:55000,satuan:'kamar',tipe:'jumlah'},
+        {id:'ruang-tamu',nama:'Bersih Ruang Tamu',harga:70000,satuan:'ruangan',tipe:'tetap'},
+        {id:'halaman',nama:'Bersih Halaman',harga:50000,satuan:'paket',tipe:'tetap'},
+        {id:'per-jam',nama:'Layanan Kebersihan per Jam',harga:75000,satuan:'jam',tipe:'jumlah'}
+    ]
+};
+
+let kategoriTerpilih = '';
+let layananTerpilih = null;
+window.subtotalAkhir = 0;
+window.antarAkhir = 0;
+
+function pilihKategori(kat){
+    kategoriTerpilih = kat;
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    
+    const judul = document.getElementById('judul-kategori');
+    judul.textContent = kat === 'cuci-barang' ? '🧺 Cuci Barang' : '🏠 Bersihkan Ruangan';
+    
+    const select = document.getElementById('jenis-layanan');
+    select.innerHTML = '<option value="">-- Pilih layanan --</option>';
+    
+    layanan[kat].forEach(function(item){
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = item.nama + ' — Rp ' + item.harga.toLocaleString('id-ID');
+        select.appendChild(opt);
+    });
+    
+    updateHarga();
+}
+
+function updateHarga(){
+    const val = document.getElementById('jenis-layanan').value;
+    if(!val){
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungTotal(0);
+        return;
+    }
+    
+    layananTerpilih = layanan[kategoriTerpilih].find(function(i){return i.id===val;});
+    
+    if(layananTerpilih.tipe === 'luas'){
+        document.getElementById('field-ukuran').classList.remove('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungLuas();
+    }else if(layananTerpilih.tipe === 'jumlah'){
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.remove('hidden');
+        const jumlah = parseInt(document.getElementById('jumlah').value) || 1;
+        hitungTotal(layananTerpilih.harga * jumlah);
+    }else{
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungTotal(layananTerpilih.harga);
+    }
+}
+
+function hitungLuas(){
+    const p = parseFloat(document.getElementById('panjang').value) || 0;
+    const l = parseFloat(document.getElementById('lebar').value) || 0;
+    const luas = p * l;
+    document.getElementById('hasil-luas').textContent = luas.toFixed(2);
+    if(layananTerpilih && layananTerpilih.tipe === 'luas'){
+        hitungTotal(luas * layananTerpilih.harga);
+    }
+}
+
+function hitungTotal(sub){
+    const antar = parseInt(document.getElementById('antarjemput').value) || 0;
+    window.subtotalAkhir = sub;
+    window.antarAkhir = antar;
+    document.getElementById('subtotal').textContent = 'Rp ' + sub.toLocaleString('id-ID');
+    document.getElementById('biaya-antar').textContent = antar > 0 ? 'Rp ' + antar.toLocaleString('id-ID') : 'Rp 0';
+    document.getElementById('total').textContent = 'Rp ' + (sub + antar).toLocaleString('id-ID');
+}
+
+function kembaliKeLangkah1(){
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+}
+
+function lanjutKeLangkah3(){
+    const layananPilihan = document.getElementById('jenis-layanan').value;
+    if(!layananPilihan){
+        alert('⚠️ Silakan pilih layanan terlebih dahulu!');
+        return;
+    }
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.remove('hidden');
+    window.scrollTo(0, 0);
+}
+
+function kembaliKeLangkah2(){
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+}
+
+async function kirimPesanan(){
+    const nama = document.getElementById('nama').value.trim();
+    const nohp = document.getElementById('nohp').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    
+    if(!nama || !nohp || !alamat){
+        alert('⚠️ Silakan lengkapi semua data pemesan!');
+        return;
+    }
+    
+    const layananNama = layananTerpilih.nama;
+    const tanggal = document.getElementById('tanggal').value;
+    const jam = document.getElementById('jam').value;
+    const catatan = document.getElementById('catatan').value || '-';
+    const total = window.subtotalAkhir + window.antarAkhir;
+    const noPesanan = `SB-${Date.now().toString().slice(-6)}`;
+    
+    // === GANTI LINK INI DENGAN LINK SHEET MONKEY KAMU ===
+    const linkSheetMonkey = 'https://api.sheetmonkey.io/form/a5bkJ33xv5ApKopCmwUC2L';
+    // =====================================================
+    
+    const formData = new FormData();
+    formData.append('No.Pesanan', noPesanan);
+    formData.append('Nama', nama);
+    formData.append('No HP', nohp);
+    formData.append('Alamat', alamat);
+    formData.append('Layanan', layananNama);
+    formData.append('Tanggal', tanggal);
+    formData.append('Jam', jam);
+    formData.append('Catatan', catatan);
+    formData.append('Total', 'Rp ' + total.toLocaleString('id-ID'));
+    
+    try {
+        await fetch(linkSheetMonkey, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors'
+        });
+    } catch(e) {
+        console.log('Data terkirim');
+    }
+    
+    document.getElementById('ringkasan-pesanan').innerHTML = `
+<strong>No. Pesanan:</strong> ${noPesanan}<br>
+<strong>Layanan:</strong> ${layananNama}<br>
+<strong>Tanggal:</strong> ${tanggal} pukul ${jam}<br>
+<strong>Nama:</strong> ${nama}<br>
+<strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}<br><br>
+✅ Pesanan terkirim! Kami akan segera hubungi Anda. 😊
+    `;
+    
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step4').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
+
