@@ -297,6 +297,184 @@ function kembaliKeLangkah2(){
     document.getElementById('step3').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
 }
+
+async function kirimPesanan(){
+    const nama = document.getElementById('nama').value.trim();
+    const nohp = document.getElementById('nohp').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    
+    if(!nama || !nohp || !alamat){
+        alert('⚠️ Silakan lengkapi semua data pemesan!');
+        return;
+    }
+    
+    const layananNama = layananTerpilih.nama;
+    const tanggal = document.getElementById('tanggal').value;
+    const jam = document.getElementById('jam').value;
+    const catatan = document.getElementById('catatan').value || '-';
+    const total = window.subtotalAkhir + window.antarAkhir;
+    const noPesanan = `SB-${Date.now().toString().slice(-6)}`;
+    
+    // ==============================================
+    // ✅ NOMOR WA BISNIS KAMU DISINI
+    const nomorWA = '6285212219530';
+    // ==============================================
+
+    // Pesan yang akan dikirim
+    const pesan = `🔴 PESANAN BARU - SURYA BERSIH
+
+No. Pesanan: ${noPesanan}
+Nama: ${nama}
+No. HP: ${nohp}
+Alamat: ${alamat}
+Layanan: ${layananNama}
+Tanggal: ${tanggal} pukul ${jam}
+Catatan: ${catatan}
+Total: Rp ${total.toLocaleString('id-ID')}`;
+
+    const linkWA = 'https://wa.me/' + nomorWA + '?text=' + encodeURIComponent(pesan);
+    
+    // === KIRIM DATA KE SHEET MONKEY ===
+    const linkSheetMonkey = 'https://api.sheetmonkey.io/form/a5bkJ33xv5ApKopCmwUC2L';
+    const formData = new FormData();
+    formData.append('No.Pesanan', noPesanan);
+    formData.append('Nama', nama);
+    formData.append('No HP', nohp);
+    formData.append('Alamat', alamat);
+    formData.append('Layanan', layananNama);
+    formData.append('Tanggal', tanggal);
+    formData.append('Jam', jam);
+    formData.append('Catatan', catatan);
+    formData.append('Total', 'Rp ' + total.toLocaleString('id-ID'));
+    
+    try {
+        await fetch(linkSheetMonkey, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors'
+        });
+    } catch(e) {
+        console.log('Data terkirim');
+    }
+    
+    // ✅ LANGSUNG BUKA WA OTOMATIS — TANPA TOMBOL!
+    window.open(linkWA, '_blank');
+    
+    // Tampilkan halaman sukses
+    document.getElementById('ringkasan-pesanan').innerHTML = 
+      '<strong>No. Pesanan:</strong> ' + noPesanan + '<br><br>' +
+      '<strong>Layanan:</strong> ' + layananNama + '<br>' +
+      '<strong>Tanggal:</strong> ' + tanggal + ' pukul ' + jam + '<br>' +
+      '<strong>Nama:</strong> ' + nama + '<br>' +
+      '<strong>Total:</strong> Rp ' + total.toLocaleString('id-ID') + '<br><br>' +
+      '✅ Pesanan terkirim! WhatsApp terbuka otomatis, silakan kirim pesan di sana.';
+    
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step4').classList.remove('hidden');
+}
+
+</script>
+
+</body>
+</html>
+
+000,satuan:'paket',tipe:'tetap'},
+        {id:'per-jam',nama:'Layanan Kebersihan per Jam',harga:75000,satuan:'jam',tipe:'jumlah'}
+    ]
+};
+
+let kategoriTerpilih = '';
+let layananTerpilih = null;
+window.subtotalAkhir = 0;
+window.antarAkhir = 0;
+
+function pilihKategori(kat){
+    kategoriTerpilih = kat;
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    
+    const judul = document.getElementById('judul-kategori');
+    judul.textContent = kat === 'cuci-barang' ? '🧺 Cuci Barang' : '🏠 Bersihkan Ruangan';
+    
+    const select = document.getElementById('jenis-layanan');
+    select.innerHTML = '<option value="">-- Pilih layanan --</option>';
+    
+    layanan[kat].forEach(function(item){
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = item.nama + ' — Rp ' + item.harga.toLocaleString('id-ID');
+        select.appendChild(opt);
+    });
+    
+    updateHarga();
+}
+
+function updateHarga(){
+    const val = document.getElementById('jenis-layanan').value;
+    if(!val){
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungTotal(0);
+        return;
+    }
+    
+    layananTerpilih = layanan[kategoriTerpilih].find(function(i){return i.id===val;});
+    
+    if(layananTerpilih.tipe === 'luas'){
+        document.getElementById('field-ukuran').classList.remove('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungLuas();
+    }else if(layananTerpilih.tipe === 'jumlah'){
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.remove('hidden');
+        const jumlah = parseInt(document.getElementById('jumlah').value) || 1;
+        hitungTotal(layananTerpilih.harga * jumlah);
+    }else{
+        document.getElementById('field-ukuran').classList.add('hidden');
+        document.getElementById('field-jumlah').classList.add('hidden');
+        hitungTotal(layananTerpilih.harga);
+    }
+}
+
+function hitungLuas(){
+    const p = parseFloat(document.getElementById('panjang').value) || 0;
+    const l = parseFloat(document.getElementById('lebar').value) || 0;
+    const luas = p * l;
+    document.getElementById('hasil-luas').textContent = luas.toFixed(2);
+    if(layananTerpilih && layananTerpilih.tipe === 'luas'){
+        hitungTotal(luas * layananTerpilih.harga);
+    }
+}
+
+function hitungTotal(sub){
+    const antar = parseInt(document.getElementById('antarjemput').value) || 0;
+    window.subtotalAkhir = sub;
+    window.antarAkhir = antar;
+    document.getElementById('subtotal').textContent = 'Rp ' + sub.toLocaleString('id-ID');
+    document.getElementById('biaya-antar').textContent = antar > 0 ? 'Rp ' + antar.toLocaleString('id-ID') : 'Rp 0';
+    document.getElementById('total').textContent = 'Rp ' + (sub + antar).toLocaleString('id-ID');
+}
+
+function kembaliKeLangkah1(){
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+}
+
+function lanjutKeLangkah3(){
+    const layananPilihan = document.getElementById('jenis-layanan').value;
+    if(!layananPilihan){
+        alert('⚠️ Silakan pilih layanan terlebih dahulu!');
+        return;
+    }
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.remove('hidden');
+    window.scrollTo(0, 0);
+}
+
+function kembaliKeLangkah2(){
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+}
 async function kirimPesanan(){
     const nama = document.getElementById('nama').value.trim();
     const nohp = document.getElementById('nohp').value.trim();
