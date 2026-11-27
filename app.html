@@ -315,23 +315,22 @@ async function kirimPesanan(){
     const noPesanan = `SB-${Date.now().toString().slice(-6)}`;
     
     // ==============================================
-    // ✅ GANTI NOMOR DI BAWAH INI DENGAN NOMOR KAMU
-    https://wa.me/6285649599169?text=Halo+ada+pesanan+baru
-
+    // ✅ NOMOR WA BISNIS KAMU DISINI
+    const nomorWA = '6285212219530';
     // ==============================================
 
-    // Susun pesan — pakai cara sederhana, TANPA backtick
-    const pesan = '🔴 PESANAN BARU - SURYA BERSIH%0A%0A' +
-      'No. Pesanan: ' + noPesanan + '%0A' +
-      'Nama: ' + nama + '%0A' +
-      'No. HP: ' + nohp + '%0A' +
-      'Alamat: ' + alamat + '%0A' +
-      'Layanan: ' + layananNama + '%0A' +
-      'Tanggal: ' + tanggal + ' pukul ' + jam + '%0A' +
-      'Catatan: ' + catatan + '%0A' +
-      'Total: Rp ' + total.toLocaleString('id-ID');
+    // Pesan yang akan dikirim
+    const pesan = `🔴 PESANAN BARU - SURYA BERSIH
 
-    // Buat link WA — CARA PALING SEDERHANA
+No. Pesanan: ${noPesanan}
+Nama: ${nama}
+No. HP: ${nohp}
+Alamat: ${alamat}
+Layanan: ${layananNama}
+Tanggal: ${tanggal} pukul ${jam}
+Catatan: ${catatan}
+Total: Rp ${total.toLocaleString('id-ID')}`;
+
     const linkWA = 'https://wa.me/' + nomorWA + '?text=' + encodeURIComponent(pesan);
     
     // === KIRIM DATA KE SHEET MONKEY ===
@@ -357,23 +356,17 @@ async function kirimPesanan(){
         console.log('Data terkirim');
     }
     
-    // === TAMPILKAN HASIL ===
-    const ringkasan = document.getElementById('ringkasan-pesanan');
-    ringkasan.innerHTML = 
+    // ✅ LANGSUNG BUKA WA OTOMATIS — TANPA TOMBOL!
+    window.open(linkWA, '_blank');
+    
+    // Tampilkan halaman sukses
+    document.getElementById('ringkasan-pesanan').innerHTML = 
       '<strong>No. Pesanan:</strong> ' + noPesanan + '<br><br>' +
       '<strong>Layanan:</strong> ' + layananNama + '<br>' +
       '<strong>Tanggal:</strong> ' + tanggal + ' pukul ' + jam + '<br>' +
       '<strong>Nama:</strong> ' + nama + '<br>' +
-      '<strong>No. HP:</strong> ' + nohp + '<br>' +
-      '<strong>Alamat:</strong> ' + alamat + '<br>' +
       '<strong>Total:</strong> Rp ' + total.toLocaleString('id-ID') + '<br><br>' +
-      
-      // TOMBOL WHATSAPP
-      '<a href="' + linkWA + '" target="_blank" ' +
-      'style="display:inline-block; background:#25d366; color:white; ' +
-      'padding:12px 24px; border-radius:8px; text-decoration:none; ' +
-      'font-weight:bold; font-size:1rem;">' +
-      '📲 KIRIM KE WHATSAPP SAYA</a>';
+      '✅ Pesanan terkirim! WhatsApp terbuka otomatis, silakan kirim pesan di sana.';
     
     document.getElementById('step3').classList.add('hidden');
     document.getElementById('step4').classList.remove('hidden');
