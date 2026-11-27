@@ -350,7 +350,38 @@ async function kirimPesanan(){
     `;
     
     document.getElementById('step3').classList.add('hidden');
+        document.getElementById('ringkasan-pesanan').innerHTML = `
+<strong>No. Pesanan:</strong> ${noPesanan}<br>
+<strong>Layanan:</strong> ${layananNama}<br>
+<strong>Tanggal:</strong> ${tanggal} pukul ${jam}<br>
+<strong>Nama:</strong> ${nama}<br>
+<strong>No. HP:</strong> ${nohp}<br>
+<strong>Alamat:</strong> ${alamat}<br>
+<strong>Catatan:</strong> ${catatan}<br>
+<strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}<br><br>
+
+<!-- === GANTI NOMOR WA DI BAWAH INI DENGAN NOMOR KAMU === -->
+<a href="https://wa.me/6285649599169?text=${encodeURIComponent(`🔴 *PESANAN BARU — SURYA BERSIH*
+
+📝 No. Pesanan: ${noPesanan}
+👤 Nama: ${nama}
+📞 No. HP: ${nohp}
+🏠 Alamat: ${alamat}
+🧹 Layanan: ${layananNama}
+📅 Tanggal: ${tanggal}
+⏰ Jam: ${jam}
+📝 Catatan: ${catatan}
+💰 Total: Rp ${total.toLocaleString('id-ID')}
+
+---
+✅ Silakan hubungi pelanggan secepatnya!`)}" target="_blank" style="display:inline-block;background:#25d366;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:10px;font-size:1rem;">
+📲 KIRIM KE WHATSAPP SAYA
+</a>
+    `;
+    
+    document.getElementById('step3').classList.add('hidden');
     document.getElementById('step4').classList.remove('hidden');
+
 }
 </script>
 
