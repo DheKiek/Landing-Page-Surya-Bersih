@@ -298,6 +298,7 @@ function kembaliKeLangkah2(){
     document.getElementById('step2').classList.remove('hidden');
 }
 
+
 async function kirimPesanan(){
     const nama = document.getElementById('nama').value.trim();
     const nohp = document.getElementById('nohp').value.trim();
@@ -315,10 +316,29 @@ async function kirimPesanan(){
     const total = window.subtotalAkhir + window.antarAkhir;
     const noPesanan = `SB-${Date.now().toString().slice(-6)}`;
     
-    // === GANTI LINK INI DENGAN LINK SHEET MONKEY KAMU ===
-    const linkSheetMonkey = 'https://api.sheetmonkey.io/form/a5bkJ33xv5ApKopCmwUC2L';
-    // =====================================================
+    // === GANTI NOMOR WA DI BAWAH INI ===
+    const nomorWA = '6281234567890'; // ← GANTI ini dengan nomor WA kamu
+    // ====================================
     
+    const teksWA = `🔴 *PESANAN BARU — SURYA BERSIH*
+
+📝 No. Pesanan: ${noPesanan}
+👤 Nama: ${nama}
+📞 No. HP: ${nohp}
+🏠 Alamat: ${alamat}
+🧹 Layanan: ${layananNama}
+📅 Tanggal: ${tanggal}
+⏰ Jam: ${jam}
+📝 Catatan: ${catatan}
+💰 Total: Rp ${total.toLocaleString('id-ID')}
+
+---
+✅ Silakan hubungi pelanggan secepatnya!`;
+
+    const linkWA = `https://'6285649599169'/${nomorWA}?text=${encodeURIComponent(teksWA)}`;
+    
+    // === KIRIM DATA KE SHEET MONKEY ===
+    const linkSheetMonkey = 'https://api.sheetmonkey.io/form/a5bkJ33xv5ApKopCmwUC2L';
     const formData = new FormData();
     formData.append('No.Pesanan', noPesanan);
     formData.append('Nama', nama);
@@ -340,49 +360,25 @@ async function kirimPesanan(){
         console.log('Data terkirim');
     }
     
+    // === TAMPILKAN RINGKASAN + TOMBOL WA ===
     document.getElementById('ringkasan-pesanan').innerHTML = `
-<strong>No. Pesanan:</strong> ${noPesanan}<br>
-<strong>Layanan:</strong> ${layananNama}<br>
-<strong>Tanggal:</strong> ${tanggal} pukul ${jam}<br>
-<strong>Nama:</strong> ${nama}<br>
-<strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}<br><br>
-✅ Pesanan terkirim! Kami akan segera hubungi Anda. 😊
-    `;
-    
-    document.getElementById('step3').classList.add('hidden');
-        document.getElementById('ringkasan-pesanan').innerHTML = `
 <strong>No. Pesanan:</strong> ${noPesanan}<br>
 <strong>Layanan:</strong> ${layananNama}<br>
 <strong>Tanggal:</strong> ${tanggal} pukul ${jam}<br>
 <strong>Nama:</strong> ${nama}<br>
 <strong>No. HP:</strong> ${nohp}<br>
 <strong>Alamat:</strong> ${alamat}<br>
-<strong>Catatan:</strong> ${catatan}<br>
 <strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}<br><br>
 
-<!-- === GANTI NOMOR WA DI BAWAH INI DENGAN NOMOR KAMU === -->
-<a href="https://wa.me/6285649599169?text=${encodeURIComponent(`🔴 *PESANAN BARU — SURYA BERSIH*
-
-📝 No. Pesanan: ${noPesanan}
-👤 Nama: ${nama}
-📞 No. HP: ${nohp}
-🏠 Alamat: ${alamat}
-🧹 Layanan: ${layananNama}
-📅 Tanggal: ${tanggal}
-⏰ Jam: ${jam}
-📝 Catatan: ${catatan}
-💰 Total: Rp ${total.toLocaleString('id-ID')}
-
----
-✅ Silakan hubungi pelanggan secepatnya!`)}" target="_blank" style="display:inline-block;background:#25d366;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:10px;font-size:1rem;">
+<a href="${linkWA}" target="_blank" style="display:inline-block; background:#25d366; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:1rem;">
 📲 KIRIM KE WHATSAPP SAYA
 </a>
     `;
     
     document.getElementById('step3').classList.add('hidden');
     document.getElementById('step4').classList.remove('hidden');
-
 }
+
 </script>
 
 </body>
